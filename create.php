@@ -3,57 +3,62 @@
 require_once "config.php";
 
 // Define variables and initialize with empty values
-$name = $location = $productssold = "";
-$name_err = $location_err = $productssold_err = "";
+$customer_name = $member_since = $favorite_product = $customer_review = "";
+$customer_name_err = $member_since_err = $favorite_product_err = $customer_review_err = "";
 
 // Processing form data when form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validate name
-    $input_name = trim($_POST["name"]);
-    if (empty($input_name)) {
-        $name_err = "Please enter a name.";
-    } elseif (!filter_var($input_name, FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z\s]+$/")))) {
-        $name_err = "Please enter a valid name.";
+    // Validate customer name
+    $input_customer_name = trim($_POST["customer-name"]);
+    if (empty($input_customer_name)) {
+        $customer_name_err = "Please enter customer name.";
     } else {
-        $name = $input_name;
+        $customer_name = $input_customer_name;
     }
 
-    // Validate location
-    $input_location = trim($_POST["location"]);
-    if (empty($input_location)) {
-        $location_err = "Please enter a location.";
+    // Validate member since
+    $input_member_since = trim($_POST["member-since"]);
+    if (empty($input_member_since)) {
+        $member_since_err = "Please enter member since.";
     } else {
-        $location = $input_location;
+        $member_since = $input_member_since;
     }
 
-    // Validate productssold
-    $input_productssold = trim($_POST["Productssold"]);
-    if (empty($input_productssold)) {
-        $productssold_err = "Please enter the productssold amount.";
-    } elseif (!ctype_digit($input_productssold)) {
-        $productssold_err = "Please enter a positive integer value.";
+    // Validate favorite product
+    $input_favorite_product = trim($_POST["favorite-product"]);
+    if (empty($input_favorite_product)) {
+        $favorite_product_err = "Please select favorite product.";
     } else {
-        $productssold = $input_productssold;
+        $favorite_product = $input_favorite_product;
+    }
+
+    // Validate customer review
+    $input_customer_review = trim($_POST["review"]);
+    if (empty($input_customer_review)) {
+        $customer_review_err = "Please enter customer review.";
+    } else {
+        $customer_review = $input_customer_review;
     }
 
     // Check input errors before inserting in database
-    if (empty($name_err) && empty($location_err) && empty($productssold_err)) {
+    if (empty($customer_name_err) && empty($member_since_err) && empty($favorite_product_err) && empty($customer_review_err)) {
         // Prepare an insert statement
-        $sql = "INSERT INTO employees (name, Location, Productssold) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO customer_reviews (customer_name, member_since, favorite_product, customer_review) VALUES (?, ?, ?, ?)";
 
         if ($stmt = mysqli_prepare($link, $sql)) {
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "sss", $param_name, $param_location, $param_productssold);
+            mysqli_stmt_bind_param($stmt, "ssss", $param_customer_name, $param_member_since, $param_favorite_product, $param_customer_review);
 
             // Set parameters
-            $param_name = $name;
-            $param_location = $location;
-            $param_productssold = $productssold;
+            $param_customer_name = $customer_name;
+            $param_member_since = $member_since;
+            $param_favorite_product = $favorite_product;
+            $param_customer_review = $customer_review;
 
             // Attempt to execute the prepared statement
             if (mysqli_stmt_execute($stmt)) {
-                // Records created successfully. Redirect to landing page
-                header("location: index.php");
+                // Redirect to customer review page
+                header("location: customer_review.php");
                 exit();
             } else {
                 echo "Oops! Something went wrong. Please try again later.";
@@ -67,53 +72,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Close connection
     mysqli_close($link);
 }
-?>
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Create Record</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .wrapper {
-            width: 600px;
-            margin: 0 auto;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="wrapper">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <h2 class="mt-5">Create Record</h2>
-                    <p>Please fill this form and submit to add employee record to the database.</p>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" name="name" class="form-control <?php echo (!empty($name_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $name; ?>">
-                            <span class="invalid-feedback"><?php echo $name_err; ?></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Location</label>
-                            <textarea name="location" class="form-control <?php echo (!empty($location_err)) ? 'is-invalid' : ''; ?>"><?php echo $location; ?></textarea>
-                            <span class="invalid-feedback"><?php echo $location_err; ?></span>
-                        </div>
-                        <div class="form-group">
-                            <label>Productssold</label>
-                            <input type="text" name="Productssold" class="form-control <?php echo (!empty($productssold_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $productssold; ?>">
-                            <span class="invalid-feedback"><?php echo $productssold_err; ?></span>
-                        </div>
-                        <input type="submit" class="btn btn-primary" value="Submit">
-                        <a href="index.php" class="btn btn-secondary ml-2">Cancel</a>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-
-</html>
