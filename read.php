@@ -62,6 +62,15 @@ if (isset($_GET["id"]) && !empty(trim($_GET["id"]))) {
             margin: 0 auto;
         }
     </style>
+    <div class="nav">
+        <a href="apple.html">HOME</a>
+        <a href="apple2.html">Weekend Sale</a>
+        <a href="apple3.html" class="active">Monthly Benefits</a>
+        <a href="apple4.html">Buy One Get One</a>
+        <a href="apple5.html">Careers</a>
+        <a href="index.php">Add Emolpyee</a>
+   
+    </div>
 </head>
 
 <body>
